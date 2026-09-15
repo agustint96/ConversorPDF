@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+salida/
+*.epub
+*.pdf
+.git/

@@ -1,0 +1,742 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Convertidor de archivos</title>
+    <style>
+      :root {
+        --tinta: #14161a;
+        --papel: #f7f8f6;
+        --borde: #d6d9d2;
+        --apagado: #6f736c;
+        --verde: #1e4d3b;
+        --verde-cl: #2f6b53;
+        --alerta: #8c2f1f;
+        --serif:
+          "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+        --sans:
+          ui-sans-serif, system-ui, "Segoe UI", Roboto, Helvetica, Arial,
+          sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: var(--papel);
+        color: var(--tinta);
+        font-family: var(--sans);
+        font-size: 16px;
+        line-height: 1.5;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      main {
+        max-width: 34rem;
+        margin: 0 auto;
+        padding: 4rem 1.5rem 6rem;
+      }
+
+      /* ---------- selector de modo ---------- */
+
+      .selector {
+        display: flex;
+        gap: 0.4rem;
+        flex-wrap: wrap;
+      }
+
+      .modo {
+        padding: 0.5rem 0.9rem;
+        border: 1px solid var(--borde);
+        background: #fff;
+        font: inherit;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--apagado);
+        cursor: pointer;
+      }
+
+      .modo:hover:not(:disabled) {
+        border-color: var(--verde);
+        color: var(--tinta);
+      }
+
+      .modo.activo {
+        background: var(--tinta);
+        border-color: var(--tinta);
+        color: #fff;
+      }
+
+      .modo:disabled {
+        cursor: default;
+        opacity: 0.5;
+      }
+
+      .modo:focus-visible {
+        outline: 2px solid var(--verde);
+        outline-offset: 2px;
+      }
+
+      /* ---------- encabezado ---------- */
+
+      h1 {
+        font-family: var(--serif);
+        font-size: clamp(2.5rem, 9vw, 3.75rem);
+        font-weight: 400;
+        line-height: 1.02;
+        letter-spacing: -0.02em;
+        margin: 1.5rem 0 0;
+      }
+
+      h1 .flecha {
+        display: block;
+        color: var(--verde);
+      }
+
+      .bajada {
+        margin: 1rem 0 0;
+        max-width: 26rem;
+        color: var(--apagado);
+      }
+
+      /* ---------- zona de archivo ---------- */
+
+      .zona {
+        margin-top: 2.75rem;
+        border: 1px solid var(--borde);
+        background: #fff;
+        padding: 1.75rem 1.5rem;
+        cursor: pointer;
+        display: block;
+        width: 100%;
+        text-align: left;
+        font: inherit;
+        color: inherit;
+      }
+
+      .zona:hover:not(:disabled),
+      .zona.encima {
+        border-color: var(--verde);
+      }
+
+      .zona:focus-visible {
+        outline: 2px solid var(--verde);
+        outline-offset: 2px;
+      }
+
+      .zona:disabled {
+        cursor: default;
+        opacity: 0.55;
+      }
+
+      .zona-titulo {
+        font-weight: 600;
+      }
+
+      .zona-detalle {
+        margin-top: 0.35rem;
+        color: var(--apagado);
+        font-size: 0.9rem;
+        word-break: break-word;
+      }
+
+      .lista-archivos {
+        margin: 0.75rem 0 0;
+        max-height: 11rem;
+        overflow-y: auto;
+        border-top: 1px solid var(--borde);
+      }
+
+      .lista-archivos .fila {
+        display: flex;
+        gap: 0.6rem;
+        padding: 0.4rem 0;
+        border-bottom: 1px solid var(--borde);
+        font-size: 0.85rem;
+      }
+
+      .lista-archivos .num {
+        color: var(--apagado);
+        font-variant-numeric: tabular-nums;
+        flex: none;
+      }
+
+      .lista-archivos .nom {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      input[type="file"] {
+        display: none;
+      }
+
+      /* ---------- boton principal ---------- */
+
+      .convertir {
+        margin-top: 1rem;
+        width: 100%;
+        padding: 0.9rem 1rem;
+        border: none;
+        background: var(--verde);
+        color: #fff;
+        font: inherit;
+        font-weight: 600;
+        cursor: pointer;
+      }
+
+      .convertir:hover:not(:disabled) {
+        background: var(--verde-cl);
+      }
+      .convertir:disabled {
+        background: var(--borde);
+        color: var(--apagado);
+        cursor: default;
+      }
+      .convertir:focus-visible {
+        outline: 2px solid var(--tinta);
+        outline-offset: 2px;
+      }
+
+      /* ---------- estado ---------- */
+
+      .estado {
+        margin-top: 3rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--borde);
+      }
+
+      .estado[hidden] {
+        display: none;
+      }
+
+      .linea {
+        display: flex;
+        align-items: baseline;
+        gap: 0.7rem;
+        font-family: var(--serif);
+        font-size: 1.6rem;
+      }
+
+      .punto {
+        width: 0.55rem;
+        height: 0.55rem;
+        border-radius: 50%;
+        background: var(--verde);
+        flex: none;
+        transform: translateY(-0.25rem);
+      }
+
+      .trabajando .punto {
+        animation: latido 1.4s ease-in-out infinite;
+      }
+      .fallo .punto {
+        background: var(--alerta);
+      }
+      .fallo .linea {
+        color: var(--alerta);
+      }
+
+      @keyframes latido {
+        50% {
+          opacity: 0.2;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .trabajando .punto {
+          animation: none;
+        }
+      }
+
+      .reloj {
+        margin-left: auto;
+        font-family: var(--sans);
+        font-size: 0.9rem;
+        font-variant-numeric: tabular-nums;
+        color: var(--apagado);
+      }
+
+      .nota {
+        margin: 0.6rem 0 0;
+        color: var(--apagado);
+        font-size: 0.9rem;
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+
+      .acciones {
+        margin-top: 1.5rem;
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+      }
+
+      .descargar {
+        display: inline-block;
+        padding: 0.8rem 1.4rem;
+        background: var(--tinta);
+        color: #fff;
+        text-decoration: none;
+        font-weight: 600;
+      }
+
+      .descargar:hover {
+        background: var(--verde);
+      }
+
+      .otro {
+        padding: 0.8rem 1.4rem;
+        border: 1px solid var(--borde);
+        background: transparent;
+        font: inherit;
+        cursor: pointer;
+        color: var(--tinta);
+      }
+
+      .otro:hover {
+        border-color: var(--tinta);
+      }
+
+      .descargar:focus-visible,
+      .otro:focus-visible {
+        outline: 2px solid var(--verde);
+        outline-offset: 2px;
+      }
+
+      footer {
+        margin-top: 4rem;
+        color: var(--apagado);
+        font-size: 0.85rem;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <div class="selector" id="selector">
+        <button type="button" class="modo" data-modo="pdf-a-epub">
+          PDF → EPUB
+        </button>
+        <button type="button" class="modo" data-modo="imagen-a-pdf">
+          Imagen → PDF
+        </button>
+        <button type="button" class="modo" data-modo="doc-a-pdf">
+          Documento → PDF
+        </button>
+      </div>
+
+      <h1 id="titulo"></h1>
+      <p class="bajada" id="bajada"></p>
+
+      <input type="file" id="archivo" />
+
+      <button type="button" class="zona" id="zona">
+        <span class="zona-titulo" id="zonaTitulo"></span>
+        <span class="zona-detalle" id="zonaDetalle"></span>
+        <div class="lista-archivos" id="listaArchivos" hidden></div>
+      </button>
+
+      <button type="button" class="convertir" id="convertir" disabled>
+        Convertir
+      </button>
+
+      <section class="estado" id="estado" hidden aria-live="polite">
+        <div class="linea">
+          <span class="punto"></span>
+          <span id="estadoTexto">En cola</span>
+          <span class="reloj" id="reloj"></span>
+        </div>
+        <p class="nota" id="nota"></p>
+        <div class="acciones" id="acciones" hidden>
+          <a class="descargar" id="descargar" href="#">Descargar</a>
+          <button type="button" class="otro" id="otro">Convertir otro</button>
+        </div>
+      </section>
+
+      <footer id="pie"></footer>
+    </main>
+
+    <script>
+      (function () {
+        "use strict";
+
+        const MODOS = {
+          "pdf-a-epub": {
+            titulo: 'Del PDF <span class="flecha">al EPUB</span>',
+            bajada:
+              "Elegí un PDF y se convierte en un libro que tu lector puede reflowear, con la primera página como portada.",
+            accept: ".pdf,application/pdf",
+            multiple: false,
+            regex: /\.pdf$/i,
+            invalido: "Ese archivo no es un PDF.",
+            zonaVacia: "Elegí un PDF",
+            zonaVaciaDetalle: "o arrastralo hasta acá",
+            uno: "PDF elegido",
+            varios: null,
+            descargaLabel: "Descargar EPUB",
+          },
+          "imagen-a-pdf": {
+            titulo: 'De imágenes <span class="flecha">a PDF</span>',
+            bajada:
+              "Elegí una o varias imágenes (JPG o PNG) y se convierten en un solo PDF, una página por imagen, en el orden en que las elegiste.",
+            accept: ".jpg,.jpeg,.png,image/jpeg,image/png",
+            multiple: true,
+            regex: /\.(jpe?g|png)$/i,
+            invalido: "Eso no son imágenes JPG o PNG.",
+            zonaVacia: "Elegí una o más imágenes",
+            zonaVaciaDetalle: "o arrastralas hasta acá",
+            uno: "imagen elegida",
+            varios: "imágenes elegidas",
+            descargaLabel: "Descargar PDF",
+          },
+          "doc-a-pdf": {
+            titulo: 'De documento <span class="flecha">a PDF</span>',
+            bajada:
+              "Elegí un documento de texto (TXT, DOCX, ODT o RTF) y se convierte a PDF.",
+            accept: ".txt,.docx,.odt,.rtf",
+            multiple: false,
+            regex: /\.(txt|docx|odt|rtf)$/i,
+            invalido: "Ese archivo no es un TXT, DOCX, ODT ni RTF.",
+            zonaVacia: "Elegí un documento",
+            zonaVaciaDetalle: "o arrastralo hasta acá",
+            uno: "documento elegido",
+            varios: null,
+            descargaLabel: "Descargar PDF",
+          },
+        };
+
+        const botonesModo = document.querySelectorAll(".modo");
+        const titulo = document.getElementById("titulo");
+        const bajada = document.getElementById("bajada");
+        const entrada = document.getElementById("archivo");
+        const zona = document.getElementById("zona");
+        const zonaTitulo = document.getElementById("zonaTitulo");
+        const zonaDetalle = document.getElementById("zonaDetalle");
+        const listaArchivos = document.getElementById("listaArchivos");
+        const botonEnviar = document.getElementById("convertir");
+        const panel = document.getElementById("estado");
+        const texto = document.getElementById("estadoTexto");
+        const nota = document.getElementById("nota");
+        const reloj = document.getElementById("reloj");
+        const acciones = document.getElementById("acciones");
+        const enlace = document.getElementById("descargar");
+        const botonOtro = document.getElementById("otro");
+        const pie = document.getElementById("pie");
+
+        const ESPERA_MS = 2000; // cada cuanto le preguntamos al servidor
+        let modoActual = "pdf-a-epub";
+        let elegidos = [];
+        let cronometro = null;
+        let arranque = 0;
+
+        // ---------- utilidades ----------
+
+        function tamano(bytes) {
+          const mb = bytes / (1024 * 1024);
+          return mb >= 1
+            ? mb.toFixed(1) + " MB"
+            : Math.max(1, Math.round(bytes / 1024)) + " KB";
+        }
+
+        function escapar(texto) {
+          const d = document.createElement("div");
+          d.textContent = texto;
+          return d.innerHTML;
+        }
+
+        function iniciarReloj() {
+          arranque = Date.now();
+          reloj.textContent = "0:00";
+          cronometro = setInterval(function () {
+            const seg = Math.floor((Date.now() - arranque) / 1000);
+            reloj.textContent =
+              Math.floor(seg / 60) + ":" + String(seg % 60).padStart(2, "0");
+          }, 1000);
+        }
+
+        function pararReloj() {
+          clearInterval(cronometro);
+          cronometro = null;
+        }
+
+        function pintar(clase, titulo, detalle) {
+          panel.hidden = false;
+          panel.className = "estado" + (clase ? " " + clase : "");
+          texto.textContent = titulo;
+          nota.textContent = detalle || "";
+        }
+
+        function fallar(detalle) {
+          pararReloj();
+          pintar("fallo", "No se pudo convertir", detalle);
+          acciones.hidden = false;
+          enlace.hidden = true;
+          botonEnviar.disabled = false;
+          zona.disabled = false;
+          botonesModo.forEach(function (boton) {
+            boton.disabled = false;
+          });
+        }
+
+        // ---------- cambio de modo ----------
+
+        function elegirModo(modo) {
+          modoActual = modo;
+          const config = MODOS[modo];
+
+          botonesModo.forEach(function (boton) {
+            boton.classList.toggle("activo", boton.dataset.modo === modo);
+          });
+
+          titulo.innerHTML = config.titulo;
+          bajada.textContent = config.bajada;
+          entrada.accept = config.accept;
+          entrada.multiple = config.multiple;
+          enlace.textContent = config.descargaLabel;
+
+          elegidos = [];
+          entrada.value = "";
+          zonaTitulo.textContent = config.zonaVacia;
+          zonaDetalle.textContent = config.zonaVaciaDetalle;
+          listaArchivos.hidden = true;
+          listaArchivos.innerHTML = "";
+          zona.disabled = false;
+          botonEnviar.disabled = true;
+          panel.hidden = true;
+          pararReloj();
+        }
+
+        botonesModo.forEach(function (boton) {
+          boton.addEventListener("click", function () {
+            elegirModo(boton.dataset.modo);
+          });
+        });
+
+        // ---------- eleccion de los archivos ----------
+
+        function tomar(archivos) {
+          const config = MODOS[modoActual];
+          const lista = Array.from(archivos || []);
+          if (!lista.length) return;
+
+          let validos = lista.filter(function (archivo) {
+            return config.regex.test(archivo.name);
+          });
+          if (!validos.length) {
+            zonaDetalle.textContent = config.invalido;
+            return;
+          }
+
+          let recorte = false;
+          if (!config.multiple && validos.length > 1) {
+            validos = validos.slice(0, 1);
+            recorte = true;
+          }
+
+          elegidos = validos;
+
+          const totalBytes = validos.reduce(function (suma, a) {
+            return suma + a.size;
+          }, 0);
+
+          zonaTitulo.textContent =
+            validos.length === 1
+              ? "1 " + config.uno
+              : validos.length + " " + config.varios;
+
+          let notaExtra = "";
+          if (recorte) {
+            notaExtra = " · se usó solo el primero";
+          } else if (validos.length < lista.length) {
+            notaExtra =
+              " · se ignoraron " +
+              (lista.length - validos.length) +
+              " que no valían";
+          }
+          zonaDetalle.textContent = tamano(totalBytes) + notaExtra;
+
+          if (validos.length > 1) {
+            listaArchivos.innerHTML = validos
+              .map(function (archivo, indice) {
+                return (
+                  '<div class="fila"><span class="num">' +
+                  (indice + 1) +
+                  '.</span><span class="nom">' +
+                  escapar(archivo.name) +
+                  "</span></div>"
+                );
+              })
+              .join("");
+            listaArchivos.hidden = false;
+          } else {
+            listaArchivos.hidden = true;
+            listaArchivos.innerHTML = "";
+          }
+
+          botonEnviar.disabled = false;
+        }
+
+        zona.addEventListener("click", function () {
+          entrada.click();
+        });
+        entrada.addEventListener("change", function () {
+          tomar(entrada.files);
+        });
+
+        ["dragenter", "dragover"].forEach(function (evento) {
+          zona.addEventListener(evento, function (e) {
+            e.preventDefault();
+            zona.classList.add("encima");
+          });
+        });
+
+        ["dragleave", "drop"].forEach(function (evento) {
+          zona.addEventListener(evento, function (e) {
+            e.preventDefault();
+            zona.classList.remove("encima");
+          });
+        });
+
+        zona.addEventListener("drop", function (e) {
+          if (e.dataTransfer.files.length) tomar(e.dataTransfer.files);
+        });
+
+        // ---------- 1) subir ----------
+
+        botonEnviar.addEventListener("click", async function () {
+          if (!elegidos.length) return;
+          const config = MODOS[modoActual];
+
+          botonEnviar.disabled = true;
+          zona.disabled = true;
+          botonesModo.forEach(function (boton) {
+            boton.disabled = true;
+          });
+          acciones.hidden = true;
+          enlace.hidden = false;
+          const detalle =
+            elegidos.length === 1
+              ? elegidos[0].name
+              : elegidos.length + " " + config.varios;
+          pintar("trabajando", "Subiendo", detalle);
+          iniciarReloj();
+
+          const cuerpo = new FormData();
+          elegidos.forEach(function (archivo) {
+            cuerpo.append("archivos", archivo);
+          });
+
+          let trabajo;
+          try {
+            const respuesta = await fetch("/convert/" + modoActual, {
+              method: "POST",
+              body: cuerpo,
+            });
+            if (!respuesta.ok) {
+              const error = await respuesta.json().catch(function () {
+                return {};
+              });
+              fallar(
+                error.detail ||
+                  "El servidor respondió " + respuesta.status + ".",
+              );
+              return;
+            }
+            trabajo = await respuesta.json();
+          } catch (error) {
+            fallar(
+              "No se pudo contactar al servidor. Fijate que siga corriendo.",
+            );
+            return;
+          }
+
+          pintar("trabajando", "En cola", detalle);
+          consultar(trabajo.id);
+        });
+
+        // ---------- 2) preguntar el estado ----------
+
+        function etiqueta(trabajo) {
+          if (trabajo.cantidad === 1) return trabajo.archivo;
+          const config = MODOS[trabajo.tipo] || {};
+          return trabajo.cantidad + " " + (config.varios || "archivos");
+        }
+
+        async function consultar(id) {
+          let trabajo;
+          try {
+            const respuesta = await fetch("/jobs/" + id);
+            if (respuesta.status === 404) {
+              fallar(
+                "El servidor se reinició y perdió este trabajo. Probá de nuevo.",
+              );
+              return;
+            }
+            trabajo = await respuesta.json();
+          } catch (error) {
+            fallar("Se cortó la conexión con el servidor.");
+            return;
+          }
+
+          if (trabajo.estado === "completado") {
+            pararReloj();
+            pintar("", "Listo", etiqueta(trabajo));
+            enlace.href = "/jobs/" + id + "/descarga";
+            enlace.hidden = false;
+            acciones.hidden = false;
+            botonesModo.forEach(function (boton) {
+              boton.disabled = false;
+            });
+            return;
+          }
+
+          if (trabajo.estado === "error") {
+            fallar(trabajo.error || "La conversión no devolvió un motivo.");
+            return;
+          }
+
+          pintar(
+            "trabajando",
+            trabajo.estado === "en_cola" ? "En cola" : "Convirtiendo",
+            etiqueta(trabajo),
+          );
+          setTimeout(function () {
+            consultar(id);
+          }, ESPERA_MS);
+        }
+
+        // ---------- 3) volver a empezar ----------
+
+        botonOtro.addEventListener("click", function () {
+          elegirModo(modoActual);
+        });
+
+        // ---------- estado del servidor ----------
+
+        fetch("/health")
+          .then(function (r) {
+            return r.json();
+          })
+          .then(function (salud) {
+            pie.textContent =
+              salud.estado === "ok"
+                ? "Servidor listo. Hasta " +
+                  salud.limite_mb +
+                  " MB por archivo."
+                : "El servidor no encuentra sus herramientas: " +
+                  (salud.detalle || "");
+          })
+          .catch(function () {
+            pie.textContent = "El servidor no responde.";
+          });
+
+        // ---------- arranque ----------
+
+        elegirModo(modoActual);
+      })();
+    </script>
+  </body>
+</html>
