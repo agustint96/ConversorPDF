@@ -22,6 +22,12 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY api.py conversor.py index.html ./
 
 ENV PYTHONUNBUFFERED=1
+# La salida a PDF de Calibre renderiza con QtWebEngine (un Chromium
+# empotrado). Ese Chromium se niega a arrancar como root sin --no-sandbox,
+# y el contenedor no tiene GPU, asi que ademas hay que forzar software
+# rendering. Sin esto, doc-a-pdf falla con "Running as root without
+# --no-sandbox is not supported".
+ENV QTWEBENGINE_CHROMIUM_FLAGS="--no-sandbox --disable-gpu --disable-software-rasterizer --disable-dev-shm-usage"
 EXPOSE 8000
 
 CMD ["sh", "-c", "uvicorn api:app --host 0.0.0.0 --port ${PORT:-8000}"]
