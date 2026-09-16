@@ -978,8 +978,6 @@
             })
             .catch(function () {
               if (intento < REINTENTOS_SALUD) {
-                pie.textContent =
-                  "Despertando el servidor… puede tardar un minuto.";
                 setTimeout(
                   function () {
                     comprobarSalud(intento + 1);
