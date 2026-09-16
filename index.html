@@ -329,11 +329,80 @@
         word-break: break-word;
       }
 
+      /* ---------- barra de progreso ---------- */
+
+      .progreso {
+        margin-top: 0.75rem;
+        height: 1.15rem;
+        background: var(--w98-field);
+        box-shadow: var(--bisel-hundido);
+        padding: 2px;
+      }
+
+      .progreso[hidden] {
+        display: none;
+      }
+
+      .progreso-relleno {
+        height: 100%;
+        width: 0%;
+        background-color: var(--w98-selbg);
+        background-image: repeating-linear-gradient(
+          90deg,
+          var(--w98-selbg) 0px,
+          var(--w98-selbg) 7px,
+          var(--w98-field) 7px,
+          var(--w98-field) 9px
+        );
+        transition: width 0.2s ease-out;
+      }
+
+      /* Sin porcentaje real durante "en cola"/"convirtiendo": un bloque va y
+         viene, como el progreso indeterminado clasico de Windows 98. */
+      .progreso.indeterminado .progreso-relleno {
+        width: 35% !important;
+        transition: none;
+        animation: marquee 1.3s ease-in-out infinite;
+      }
+
+      @keyframes marquee {
+        0%,
+        100% {
+          margin-left: 0%;
+        }
+        50% {
+          margin-left: 65%;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .progreso.indeterminado .progreso-relleno {
+          animation: none;
+          margin-left: 0%;
+          width: 100% !important;
+        }
+      }
+
+      .fallo .progreso-relleno {
+        background-color: var(--alerta);
+        background-image: repeating-linear-gradient(
+          90deg,
+          var(--alerta) 0px,
+          var(--alerta) 7px,
+          var(--w98-field) 7px,
+          var(--w98-field) 9px
+        );
+      }
+
       .acciones {
         margin-top: 1.25rem;
         display: flex;
         gap: 0.6rem;
         flex-wrap: wrap;
+      }
+
+      .acciones[hidden] {
+        display: none;
       }
 
       .descargar {
@@ -344,6 +413,10 @@
         color: var(--texto);
         text-decoration: none;
         font-weight: 700;
+      }
+
+      .descargar[hidden] {
+        display: none;
       }
 
       .descargar:active {
@@ -456,6 +529,9 @@
           <span class="reloj" id="reloj"></span>
         </div>
         <p class="nota" id="nota"></p>
+        <div class="progreso" id="progreso" hidden>
+          <div class="progreso-relleno" id="progresoRelleno"></div>
+        </div>
         <div class="acciones" id="acciones" hidden>
           <a class="descargar" id="descargar" href="#">Descargar</a>
           <button type="button" class="otro" id="otro">Convertir otro</button>
@@ -527,6 +603,8 @@
         const nota = document.getElementById("nota");
         const reloj = document.getElementById("reloj");
         const acciones = document.getElementById("acciones");
+        const progreso = document.getElementById("progreso");
+        const progresoRelleno = document.getElementById("progresoRelleno");
         const enlace = document.getElementById("descargar");
         const botonOtro = document.getElementById("otro");
         const pie = document.getElementById("pie");
@@ -574,9 +652,39 @@
           nota.textContent = detalle || "";
         }
 
+        // ---------- barra de progreso ----------
+
+        function mostrarProgreso() {
+          progreso.hidden = false;
+          progreso.classList.remove("indeterminado");
+          progresoRelleno.style.width = "0%";
+        }
+
+        function fijarProgreso(fraccion) {
+          progresoRelleno.style.width =
+            Math.max(0, Math.min(1, fraccion)) * 100 + "%";
+        }
+
+        function progresoIndeterminado() {
+          progreso.hidden = false;
+          progreso.classList.add("indeterminado");
+        }
+
+        function progresoCompleto() {
+          progreso.classList.remove("indeterminado");
+          progresoRelleno.style.width = "100%";
+        }
+
+        function ocultarProgreso() {
+          progreso.hidden = true;
+          progreso.classList.remove("indeterminado");
+          progresoRelleno.style.width = "0%";
+        }
+
         function fallar(detalle) {
           pararReloj();
           pintar("fallo", "No se pudo convertir", detalle);
+          progreso.classList.remove("indeterminado");
           acciones.hidden = false;
           enlace.hidden = true;
           botonEnviar.disabled = false;
@@ -612,6 +720,7 @@
           botonEnviar.disabled = true;
           panel.hidden = true;
           pararReloj();
+          ocultarProgreso();
         }
 
         botonesModo.forEach(function (boton) {
@@ -711,6 +820,39 @@
 
         // ---------- 1) subir ----------
 
+        // fetch() no expone progreso de subida en todos los navegadores;
+        // XMLHttpRequest sí, vía xhr.upload.onprogress.
+        function subirConProgreso(url, formData, alProgresar) {
+          return new Promise(function (resolve, reject) {
+            const xhr = new XMLHttpRequest();
+            xhr.open("POST", url);
+            xhr.upload.addEventListener("progress", function (e) {
+              if (e.lengthComputable) alProgresar(e.loaded / e.total);
+            });
+            xhr.addEventListener("load", function () {
+              let datos = {};
+              try {
+                datos = JSON.parse(xhr.responseText);
+              } catch (error) {
+                datos = {};
+              }
+              if (xhr.status >= 200 && xhr.status < 300) {
+                resolve(datos);
+              } else {
+                reject(
+                  datos.detail || "El servidor respondió " + xhr.status + ".",
+                );
+              }
+            });
+            xhr.addEventListener("error", function () {
+              reject(
+                "No se pudo contactar al servidor. Fijate que siga corriendo.",
+              );
+            });
+            xhr.send(formData);
+          });
+        }
+
         botonEnviar.addEventListener("click", async function () {
           if (!elegidos.length) return;
           const config = MODOS[modoActual];
@@ -727,6 +869,7 @@
               ? elegidos[0].name
               : elegidos.length + " " + config.varios;
           pintar("trabajando", "Subiendo", detalle);
+          mostrarProgreso();
           iniciarReloj();
 
           const cuerpo = new FormData();
@@ -736,29 +879,18 @@
 
           let trabajo;
           try {
-            const respuesta = await fetch("/convert/" + modoActual, {
-              method: "POST",
-              body: cuerpo,
-            });
-            if (!respuesta.ok) {
-              const error = await respuesta.json().catch(function () {
-                return {};
-              });
-              fallar(
-                error.detail ||
-                  "El servidor respondió " + respuesta.status + ".",
-              );
-              return;
-            }
-            trabajo = await respuesta.json();
-          } catch (error) {
-            fallar(
-              "No se pudo contactar al servidor. Fijate que siga corriendo.",
+            trabajo = await subirConProgreso(
+              "/convert/" + modoActual,
+              cuerpo,
+              fijarProgreso,
             );
+          } catch (error) {
+            fallar(typeof error === "string" ? error : "Error desconocido.");
             return;
           }
 
           pintar("trabajando", "En cola", detalle);
+          progresoIndeterminado();
           consultar(trabajo.id);
         });
 
@@ -789,6 +921,7 @@
           if (trabajo.estado === "completado") {
             pararReloj();
             pintar("", "Listo", etiqueta(trabajo));
+            progresoCompleto();
             enlace.href = "/jobs/" + id + "/descarga";
             enlace.hidden = false;
             acciones.hidden = false;
