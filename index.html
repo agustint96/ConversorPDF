@@ -8,38 +8,47 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=DM+Mono:wght@300;400&display=swap"
+      href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&display=swap"
       rel="stylesheet"
     />
     <link
       rel="icon"
       type="image/svg+xml"
-      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M8 3h11l5 5v21a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z' fill='%23f0ece4' stroke='%232f4467' stroke-width='1.3'/%3E%3Cpath d='M19 3v5h5' fill='none' stroke='%232f4467' stroke-width='1.3'/%3E%3Cpath d='M11.5 18.5a5 5 0 0 1 8.3-3.7' fill='none' stroke='%237eb8c9' stroke-width='1.8' stroke-linecap='round'/%3E%3Cpath d='M19.2 13.4l1-3.2 2.9 1.4' fill='none' stroke='%237eb8c9' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M20.5 19.5a5 5 0 0 1-8.3 3.7' fill='none' stroke='%23f19280' stroke-width='1.8' stroke-linecap='round'/%3E%3Cpath d='M12.8 24.6l-1-3.2-2.9 1.4' fill='none' stroke='%23f19280' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M8 3h11l5 5v21a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z' fill='%23f7f5ef' stroke='%231b1b18' stroke-width='1.3'/%3E%3Cpath d='M19 3v5h5' fill='none' stroke='%231b1b18' stroke-width='1.3'/%3E%3Cpath d='M11.5 18.5a5 5 0 0 1 8.3-3.7' fill='none' stroke='%2312305a' stroke-width='1.8' stroke-linecap='round'/%3E%3Cpath d='M19.2 13.4l1-3.2 2.9 1.4' fill='none' stroke='%2312305a' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M20.5 19.5a5 5 0 0 1-8.3 3.7' fill='none' stroke='%23808076' stroke-width='1.8' stroke-linecap='round'/%3E%3Cpath d='M12.8 24.6l-1-3.2-2.9 1.4' fill='none' stroke='%23808076' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"
     />
 
     <style>
+      /* Misma paleta Win98 que sisop.html, para que la ventana embebida no
+         desentone con el resto del escritorio. */
       :root {
-        --navy: #0d1b2e;
-        --navy-mid: #1a2d4a;
-        --blue: #2f4467;
-        --accent: #f19280;
-        --accent2: #7eb8c9;
-        --white: #f0ece4;
-        --muted: rgba(240, 236, 228, 0.55);
-        --card-bg: rgba(47, 68, 103, 0.28);
-        --card-border: rgba(126, 184, 201, 0.18);
-        --alerta: #ff8a73;
-
-        --tinta: var(--white);
-        --papel: transparent;
-        --borde: var(--card-border);
-        --apagado: var(--muted);
-        --verde: var(--accent2);
-        --verde-cl: var(--accent);
-        --serif: "Cormorant Garamond", "Iowan Old Style", Georgia, serif;
+        --w98-face: #c9c5bb;
+        --w98-face-lite: #e4e1d8;
+        --w98-hilite: #ffffff;
+        --w98-shadow: #808076;
+        --w98-dkshadow: #3a3a34;
+        --w98-field: #f7f5ef;
+        --w98-selbg: #12305a;
+        --w98-seltext: #f0ece4;
+        --texto: #1b1b18;
+        --apagado: #55554a;
+        --alerta: #8c2f1f;
         --sans:
           "DM Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas,
           monospace;
+
+        /* Bisel "elevado" (botones en reposo) y su inverso "hundido"
+           (pozos de contenido, estado presionado): mismas 4 capas que
+           usa sisop.html para .btn / .tb-btn, nada inventado acá. */
+        --bisel-elevado:
+          inset -1px -1px 0 0 var(--w98-dkshadow),
+          inset 1px 1px 0 0 var(--w98-hilite),
+          inset -2px -2px 0 0 var(--w98-shadow),
+          inset 2px 2px 0 0 var(--w98-face-lite);
+        --bisel-hundido:
+          inset 1px 1px 0 0 var(--w98-dkshadow),
+          inset -1px -1px 0 0 var(--w98-hilite),
+          inset 2px 2px 0 0 var(--w98-shadow),
+          inset -2px -2px 0 0 var(--w98-face-lite);
       }
 
       * {
@@ -55,34 +64,18 @@
       body {
         margin: 0;
         min-height: 100vh;
-        background-color: var(--navy);
-        background-image:
-          radial-gradient(
-            ellipse at 50% 0%,
-            rgba(126, 184, 201, 0.14),
-            transparent 60%
-          ),
-          url("/static/fondo-estrellado.png");
-        background-size: cover, cover;
-        background-attachment: fixed;
-        background-position: center;
-        color: var(--tinta);
+        background: var(--w98-field);
+        color: var(--texto);
         font-family: var(--sans);
-        font-size: 16px;
+        font-size: 15px;
         line-height: 1.5;
         -webkit-font-smoothing: antialiased;
-      }
-
-      @supports (-webkit-touch-callout: none) {
-        body {
-          background-attachment: scroll;
-        }
       }
 
       main {
         max-width: 34rem;
         margin: 0 auto;
-        padding: 4rem 1.5rem 6rem;
+        padding: 2.5rem 1.5rem 4rem;
       }
 
       /* ---------- marca ---------- */
@@ -90,93 +83,90 @@
       .marca {
         display: flex;
         align-items: center;
-        gap: 0.55rem;
-        margin-bottom: 1.75rem;
+        gap: 0.5rem;
+        margin-bottom: 1.5rem;
       }
 
       .marca-icono {
-        width: 1.7rem;
-        height: 1.7rem;
+        width: 1.6rem;
+        height: 1.6rem;
         flex: none;
       }
 
       .marca-texto {
-        font-family: var(--serif);
-        font-style: italic;
-        font-size: 1.2rem;
-        letter-spacing: 0.02em;
-        color: var(--muted);
+        font-weight: 700;
+        font-size: 1rem;
+        letter-spacing: 0.04em;
+        color: var(--texto);
       }
 
       /* ---------- selector de modo ---------- */
 
       .selector {
         display: flex;
-        gap: 0.4rem;
+        gap: 0.3rem;
         flex-wrap: wrap;
       }
 
       .modo {
         padding: 0.5rem 0.9rem;
-        border: 1px solid var(--borde);
-        background: var(--card-bg);
+        border: 0;
+        background: var(--w98-face);
+        box-shadow: var(--bisel-elevado);
         font: inherit;
-        font-size: 0.85rem;
-        font-weight: 600;
-        color: var(--apagado);
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: var(--texto);
         cursor: pointer;
       }
 
-      .modo:hover:not(:disabled) {
-        border-color: var(--verde);
-        color: var(--tinta);
-      }
-
       .modo.activo {
-        background: var(--blue);
-        border-color: var(--accent2);
-        color: var(--white);
+        background: var(--w98-selbg);
+        color: var(--w98-seltext);
+        box-shadow: var(--bisel-hundido);
       }
 
       .modo:disabled {
         cursor: default;
-        opacity: 0.5;
+        color: var(--w98-shadow);
+        text-shadow: 1px 1px 0 var(--w98-hilite);
       }
 
       .modo:focus-visible {
-        outline: 2px solid var(--verde);
-        outline-offset: 2px;
+        outline: 1px dotted var(--w98-dkshadow);
+        outline-offset: -4px;
       }
 
       /* ---------- encabezado ---------- */
 
       h1 {
-        font-family: var(--serif);
-        font-size: clamp(2.5rem, 9vw, 3.75rem);
-        font-weight: 400;
-        line-height: 1.02;
-        letter-spacing: -0.02em;
+        font-family: var(--sans);
+        font-size: 1.7rem;
+        font-weight: 700;
+        line-height: 1.25;
+        letter-spacing: -0.01em;
         margin: 1.5rem 0 0;
       }
 
       h1 .flecha {
-        display: block;
-        color: var(--verde);
+        color: var(--w98-selbg);
       }
 
       .bajada {
-        margin: 1rem 0 0;
+        margin: 0.6rem 0 0;
         max-width: 26rem;
         color: var(--apagado);
+        font-size: 0.9rem;
       }
 
       /* ---------- zona de archivo ---------- */
 
       .zona {
-        margin-top: 2.75rem;
-        border: 1px solid var(--borde);
-        background: var(--card-bg);
-        padding: 1.75rem 1.5rem;
+        margin-top: 2rem;
+        border: 0;
+        background: var(--w98-field);
+        box-shadow: var(--bisel-hundido);
+        padding: 1.5rem 1.25rem;
         cursor: pointer;
         display: block;
         width: 100%;
@@ -185,29 +175,28 @@
         color: inherit;
       }
 
-      .zona:hover:not(:disabled),
       .zona.encima {
-        border-color: var(--verde);
+        background: var(--w98-face-lite);
       }
 
       .zona:focus-visible {
-        outline: 2px solid var(--verde);
-        outline-offset: 2px;
+        outline: 1px dotted var(--w98-dkshadow);
+        outline-offset: -4px;
       }
 
       .zona:disabled {
         cursor: default;
-        opacity: 0.55;
+        color: var(--w98-shadow);
       }
 
       .zona-titulo {
-        font-weight: 600;
+        font-weight: 700;
       }
 
       .zona-detalle {
         margin-top: 0.35rem;
         color: var(--apagado);
-        font-size: 0.9rem;
+        font-size: 0.85rem;
         word-break: break-word;
       }
 
@@ -215,15 +204,16 @@
         margin: 0.75rem 0 0;
         max-height: 11rem;
         overflow-y: auto;
-        border-top: 1px solid var(--borde);
+        border-top: 1px solid var(--w98-shadow);
+        border-bottom: 1px solid var(--w98-hilite);
       }
 
       .lista-archivos .fila {
         display: flex;
         gap: 0.6rem;
-        padding: 0.4rem 0;
-        border-bottom: 1px solid var(--borde);
-        font-size: 0.85rem;
+        padding: 0.35rem 0;
+        border-bottom: 1px solid var(--w98-face-lite);
+        font-size: 0.8rem;
       }
 
       .lista-archivos .num {
@@ -247,34 +237,35 @@
       .convertir {
         margin-top: 1rem;
         width: 100%;
-        padding: 0.9rem 1rem;
-        border: none;
-        background: var(--accent);
-        color: var(--navy);
+        padding: 0.8rem 1rem;
+        border: 0;
+        background: var(--w98-face);
+        box-shadow: var(--bisel-elevado);
+        color: var(--texto);
         font: inherit;
-        font-weight: 600;
+        font-weight: 700;
         cursor: pointer;
       }
 
-      .convertir:hover:not(:disabled) {
-        background: var(--accent2);
+      .convertir:active:not(:disabled) {
+        box-shadow: var(--bisel-hundido);
       }
       .convertir:disabled {
-        background: rgba(240, 236, 228, 0.12);
-        color: var(--apagado);
+        color: var(--w98-shadow);
+        text-shadow: 1px 1px 0 var(--w98-hilite);
         cursor: default;
       }
       .convertir:focus-visible {
-        outline: 2px solid var(--tinta);
-        outline-offset: 2px;
+        outline: 1px dotted var(--w98-dkshadow);
+        outline-offset: -4px;
       }
 
       /* ---------- estado ---------- */
 
       .estado {
-        margin-top: 3rem;
-        padding-top: 1.5rem;
-        border-top: 1px solid var(--borde);
+        margin-top: 2.5rem;
+        padding-top: 1.25rem;
+        border-top: 1px solid var(--w98-shadow);
       }
 
       .estado[hidden] {
@@ -284,18 +275,19 @@
       .linea {
         display: flex;
         align-items: baseline;
-        gap: 0.7rem;
-        font-family: var(--serif);
-        font-size: 1.6rem;
+        gap: 0.6rem;
+        font-family: var(--sans);
+        font-size: 1.2rem;
+        font-weight: 700;
       }
 
       .punto {
         width: 0.55rem;
         height: 0.55rem;
         border-radius: 50%;
-        background: var(--verde);
+        background: var(--w98-selbg);
         flex: none;
-        transform: translateY(-0.25rem);
+        transform: translateY(-0.15rem);
       }
 
       .trabajando .punto {
@@ -323,62 +315,65 @@
       .reloj {
         margin-left: auto;
         font-family: var(--sans);
-        font-size: 0.9rem;
+        font-size: 0.85rem;
+        font-weight: 400;
         font-variant-numeric: tabular-nums;
         color: var(--apagado);
       }
 
       .nota {
-        margin: 0.6rem 0 0;
+        margin: 0.5rem 0 0;
         color: var(--apagado);
-        font-size: 0.9rem;
+        font-size: 0.85rem;
         white-space: pre-wrap;
         word-break: break-word;
       }
 
       .acciones {
-        margin-top: 1.5rem;
+        margin-top: 1.25rem;
         display: flex;
-        gap: 0.75rem;
+        gap: 0.6rem;
         flex-wrap: wrap;
       }
 
       .descargar {
         display: inline-block;
-        padding: 0.8rem 1.4rem;
-        background: var(--blue);
-        color: var(--white);
+        padding: 0.7rem 1.3rem;
+        background: var(--w98-face);
+        box-shadow: var(--bisel-elevado);
+        color: var(--texto);
         text-decoration: none;
-        font-weight: 600;
+        font-weight: 700;
       }
 
-      .descargar:hover {
-        background: var(--verde);
+      .descargar:active {
+        box-shadow: var(--bisel-hundido);
       }
 
       .otro {
-        padding: 0.8rem 1.4rem;
-        border: 1px solid var(--borde);
-        background: transparent;
+        padding: 0.7rem 1.3rem;
+        border: 0;
+        background: var(--w98-face);
+        box-shadow: var(--bisel-elevado);
         font: inherit;
         cursor: pointer;
-        color: var(--tinta);
+        color: var(--texto);
       }
 
-      .otro:hover {
-        border-color: var(--tinta);
+      .otro:active {
+        box-shadow: var(--bisel-hundido);
       }
 
       .descargar:focus-visible,
       .otro:focus-visible {
-        outline: 2px solid var(--verde);
-        outline-offset: 2px;
+        outline: 1px dotted var(--w98-dkshadow);
+        outline-offset: -4px;
       }
 
       footer {
-        margin-top: 4rem;
+        margin-top: 3rem;
         color: var(--apagado);
-        font-size: 0.85rem;
+        font-size: 0.8rem;
       }
     </style>
   </head>
@@ -388,22 +383,22 @@
         <svg class="marca-icono" viewBox="0 0 32 32" aria-hidden="true">
           <path
             d="M8 3h11l5 5v21a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"
-            fill="#f0ece4"
-            stroke="#2f4467"
+            fill="#f7f5ef"
+            stroke="#1b1b18"
             stroke-width="1.3"
           />
-          <path d="M19 3v5h5" fill="none" stroke="#2f4467" stroke-width="1.3" />
+          <path d="M19 3v5h5" fill="none" stroke="#1b1b18" stroke-width="1.3" />
           <path
             d="M11.5 18.5a5 5 0 0 1 8.3-3.7"
             fill="none"
-            stroke="#7eb8c9"
+            stroke="#12305a"
             stroke-width="1.8"
             stroke-linecap="round"
           />
           <path
             d="M19.2 13.4l1-3.2 2.9 1.4"
             fill="none"
-            stroke="#7eb8c9"
+            stroke="#12305a"
             stroke-width="1.8"
             stroke-linecap="round"
             stroke-linejoin="round"
@@ -411,14 +406,14 @@
           <path
             d="M20.5 19.5a5 5 0 0 1-8.3 3.7"
             fill="none"
-            stroke="#f19280"
+            stroke="#808076"
             stroke-width="1.8"
             stroke-linecap="round"
           />
           <path
             d="M12.8 24.6l-1-3.2-2.9 1.4"
             fill="none"
-            stroke="#f19280"
+            stroke="#808076"
             stroke-width="1.8"
             stroke-linecap="round"
             stroke-linejoin="round"

@@ -41,7 +41,6 @@ from pathlib import Path
 
 from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.responses import FileResponse, HTMLResponse
-from fastapi.staticfiles import StaticFiles
 
 from conversor import (
     ConversionError,
@@ -58,7 +57,6 @@ TROZO = 1024 * 1024
 TTL_MINUTOS = 60
 CUPO_SIMULTANEO = 2
 PAGINA = Path(__file__).parent / "index.html"
-ESTATICOS = Path(__file__).parent / "static"
 LARGO_MAXIMO_NOMBRE = 80
 
 
@@ -96,7 +94,6 @@ CONVERSIONES: dict[str, TipoConversion] = {
 }
 
 app = FastAPI(title="Formator")
-app.mount("/static", StaticFiles(directory=ESTATICOS), name="static")
 
 
 # --------------------------------------------------------------------------
