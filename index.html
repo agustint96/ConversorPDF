@@ -14,7 +14,7 @@
     <link
       rel="icon"
       type="image/svg+xml"
-      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M8 3h11l5 5v21a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z' fill='%23f7f5ef' stroke='%231b1b18' stroke-width='1.3'/%3E%3Cpath d='M19 3v5h5' fill='none' stroke='%231b1b18' stroke-width='1.3'/%3E%3Cpath d='M11.5 18.5a5 5 0 0 1 8.3-3.7' fill='none' stroke='%2312305a' stroke-width='1.8' stroke-linecap='round'/%3E%3Cpath d='M19.2 13.4l1-3.2 2.9 1.4' fill='none' stroke='%2312305a' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M20.5 19.5a5 5 0 0 1-8.3 3.7' fill='none' stroke='%23808076' stroke-width='1.8' stroke-linecap='round'/%3E%3Cpath d='M12.8 24.6l-1-3.2-2.9 1.4' fill='none' stroke='%23808076' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M8 3h11l5 5v21a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z' fill='%23f7f5ef' stroke='%231b1b18' stroke-width='1.3'/%3E%3Cpath d='M19 3v5h5' fill='none' stroke='%231b1b18' stroke-width='1.3'/%3E%3Cpath d='M11.5 18.5a5 5 0 0 1 8.3-3.7' fill='none' stroke='%232f5fa8' stroke-width='1.8' stroke-linecap='round'/%3E%3Cpath d='M19.2 13.4l1-3.2 2.9 1.4' fill='none' stroke='%232f5fa8' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M20.5 19.5a5 5 0 0 1-8.3 3.7' fill='none' stroke='%23808076' stroke-width='1.8' stroke-linecap='round'/%3E%3Cpath d='M12.8 24.6l-1-3.2-2.9 1.4' fill='none' stroke='%23808076' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"
     />
 
     <style>
@@ -105,6 +105,7 @@
       .marca-o {
         position: relative;
         display: inline-block;
+        --o-desplazamiento: 0em;
       }
 
       .marca-o-letra {
@@ -118,10 +119,14 @@
         height: 0.72em;
         margin: auto;
         opacity: 0;
-        transform: scale(0.7);
+        transform: scale(0.7) translateY(var(--o-desplazamiento));
         transition:
           opacity 0.15s ease,
           transform 0.15s ease;
+      }
+
+      .marca-o.segunda {
+        --o-desplazamiento: 0.05em;
       }
 
       .marca-o.mostrar-icono .marca-o-letra {
@@ -130,11 +135,11 @@
 
       .marca-o.mostrar-icono .marca-o-icono {
         opacity: 1;
-        transform: scale(1);
+        transform: scale(1) translateY(var(--o-desplazamiento));
       }
 
       .marca-o.asentado .marca-o-icono {
-        transform: scale(1) rotate(16deg);
+        transform: scale(1) rotate(16deg) translateY(var(--o-desplazamiento));
         transition: transform 0.28s ease;
       }
 
@@ -551,14 +556,14 @@
             <path
               d="M-7.5 2.3a8 8 0 0 1 13.2-5.9"
               fill="none"
-              stroke="#12305a"
+              stroke="#2f5fa8"
               stroke-width="3"
               stroke-linecap="round"
             />
             <path
               d="M5 -7.6l1.6-5.1 4.6 2.3"
               fill="none"
-              stroke="#12305a"
+              stroke="#2f5fa8"
               stroke-width="3"
               stroke-linecap="round"
               stroke-linejoin="round"
@@ -583,14 +588,14 @@
             <path
               d="M-7.5 2.3a8 8 0 0 1 13.2-5.9"
               fill="none"
-              stroke="#12305a"
+              stroke="#2f5fa8"
               stroke-width="3"
               stroke-linecap="round"
             />
             <path
               d="M5 -7.6l1.6-5.1 4.6 2.3"
               fill="none"
-              stroke="#12305a"
+              stroke="#2f5fa8"
               stroke-width="3"
               stroke-linecap="round"
               stroke-linejoin="round"
@@ -624,14 +629,14 @@
               <path
                 d="M-7.5 2.3a8 8 0 0 1 13.2-5.9"
                 fill="none"
-                stroke="#12305a"
+                stroke="#2f5fa8"
                 stroke-width="3"
                 stroke-linecap="round"
               />
               <path
                 d="M5 -7.6l1.6-5.1 4.6 2.3"
                 fill="none"
-                stroke="#12305a"
+                stroke="#2f5fa8"
                 stroke-width="3"
                 stroke-linecap="round"
                 stroke-linejoin="round"
@@ -653,7 +658,7 @@
               /></svg></span
           ><span class="letra">r</span><span class="letra">m</span
           ><span class="letra">a</span><span class="letra">t</span
-          ><span class="marca-o letra"
+          ><span class="marca-o letra segunda"
             ><span class="marca-o-letra">o</span
             ><svg
               class="marca-o-icono"
@@ -663,14 +668,14 @@
               <path
                 d="M-7.5 2.3a8 8 0 0 1 13.2-5.9"
                 fill="none"
-                stroke="#12305a"
+                stroke="#2f5fa8"
                 stroke-width="3"
                 stroke-linecap="round"
               />
               <path
                 d="M5 -7.6l1.6-5.1 4.6 2.3"
                 fill="none"
-                stroke="#12305a"
+                stroke="#2f5fa8"
                 stroke-width="3"
                 stroke-linecap="round"
                 stroke-linejoin="round"
