@@ -821,22 +821,46 @@
 
         // ---------- estado del servidor ----------
 
-        fetch("/health")
-          .then(function (r) {
-            return r.json();
-          })
-          .then(function (salud) {
-            pie.textContent =
-              salud.estado === "ok"
-                ? "Servidor listo. Hasta " +
-                  salud.limite_mb +
-                  " MB por archivo."
-                : "El servidor no encuentra sus herramientas: " +
-                  (salud.detalle || "");
-          })
-          .catch(function () {
-            pie.textContent = "El servidor no responde.";
-          });
+        // El plan gratis de Render "duerme" el servidor si nadie lo usa: la
+        // primera consulta después de eso puede tardar hasta un minuto en
+        // responder, y mientras tanto puede devolver un error transitorio.
+        // Reintentamos con espera creciente en vez de rendirnos al primer
+        // intento fallido.
+        const REINTENTOS_SALUD = 8;
+
+        function comprobarSalud(intento) {
+          intento = intento || 0;
+          fetch("/health")
+            .then(function (r) {
+              return r.json();
+            })
+            .then(function (salud) {
+              pie.textContent =
+                salud.estado === "ok"
+                  ? "Servidor listo. Hasta " +
+                    salud.limite_mb +
+                    " MB por archivo."
+                  : "El servidor no encuentra sus herramientas: " +
+                    (salud.detalle || "");
+            })
+            .catch(function () {
+              if (intento < REINTENTOS_SALUD) {
+                pie.textContent =
+                  "Despertando el servidor… puede tardar un minuto.";
+                setTimeout(
+                  function () {
+                    comprobarSalud(intento + 1);
+                  },
+                  2000 + intento * 2000,
+                );
+                return;
+              }
+              pie.textContent =
+                "El servidor no responde. Recargá la página en un rato.";
+            });
+        }
+
+        comprobarSalud();
 
         // ---------- arranque ----------
 
