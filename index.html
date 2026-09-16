@@ -33,8 +33,7 @@
         --apagado: #55554a;
         --alerta: #8c2f1f;
         --sans:
-          "DM Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas,
-          monospace;
+          "DM Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
 
         /* Bisel "elevado" (botones en reposo) y su inverso "hundido"
            (pozos de contenido, estado presionado): mismas 4 capas que
@@ -115,8 +114,8 @@
       .marca-o-icono {
         position: absolute;
         inset: 0;
-        width: 0.52em;
-        height: 0.52em;
+        width: 0.7em;
+        height: 0.72em;
         margin: auto;
         opacity: 0;
         transform: scale(0.7);
@@ -125,19 +124,39 @@
           transform 0.15s ease;
       }
 
-      .marca-o:hover .marca-o-letra {
+      .marca-o.mostrar-icono .marca-o-letra {
         opacity: 0;
       }
 
-      .marca-o:hover .marca-o-icono {
+      .marca-o.mostrar-icono .marca-o-icono {
         opacity: 1;
         transform: scale(1);
       }
 
+      .marca-o.asentado .marca-o-icono {
+        transform: scale(1) rotate(16deg) translateX(0.06em);
+        transition: transform 0.28s ease;
+      }
+
+      /* ---------- animacion de tipeo del titulo ---------- */
+
+      .letra {
+        opacity: 0;
+        transition: opacity 0.05s linear;
+      }
+
+      .letra.visible {
+        opacity: 1;
+      }
+
       @media (prefers-reduced-motion: reduce) {
         .marca-o-letra,
-        .marca-o-icono {
+        .marca-o-icono,
+        .letra {
           transition: none;
+        }
+        .marca-o.asentado .marca-o-icono {
+          transform: none;
         }
       }
 
@@ -594,7 +613,8 @@
           </g>
         </svg>
         <h1 class="marca-titulo">
-          F<span class="marca-o"
+          <span class="letra">F</span
+          ><span class="marca-o letra"
             ><span class="marca-o-letra">o</span
             ><svg
               class="marca-o-icono"
@@ -630,8 +650,10 @@
                 stroke-width="3"
                 stroke-linecap="round"
                 stroke-linejoin="round"
-              /></svg
-          ></span>rmat<span class="marca-o"
+              /></svg></span
+          ><span class="letra">r</span><span class="letra">m</span
+          ><span class="letra">a</span><span class="letra">t</span
+          ><span class="marca-o letra"
             ><span class="marca-o-letra">o</span
             ><svg
               class="marca-o-icono"
@@ -667,8 +689,8 @@
                 stroke-width="3"
                 stroke-linecap="round"
                 stroke-linejoin="round"
-              /></svg
-          ></span>r
+              /></svg></span
+          ><span class="letra">r</span>
         </h1>
       </div>
 
@@ -1170,9 +1192,52 @@
 
         comprobarSalud();
 
+        // ---------- animacion de tipeo del titulo ----------
+
+        function animarTitulo() {
+          const letras = document.querySelectorAll(".marca-titulo .letra");
+          const oes = document.querySelectorAll(".marca-o");
+          const reducido = window.matchMedia(
+            "(prefers-reduced-motion: reduce)",
+          ).matches;
+
+          if (reducido) {
+            letras.forEach(function (l) {
+              l.classList.add("visible");
+            });
+            oes.forEach(function (o) {
+              o.classList.add("mostrar-icono");
+            });
+            return;
+          }
+
+          const PASO_MS = 85;
+          let i = 0;
+          function siguienteLetra() {
+            if (i < letras.length) {
+              letras[i].classList.add("visible");
+              i++;
+              setTimeout(siguienteLetra, PASO_MS);
+              return;
+            }
+            setTimeout(function () {
+              oes.forEach(function (o) {
+                o.classList.add("mostrar-icono");
+              });
+              setTimeout(function () {
+                oes.forEach(function (o) {
+                  o.classList.add("asentado");
+                });
+              }, 200);
+            }, 300);
+          }
+          siguienteLetra();
+        }
+
         // ---------- arranque ----------
 
         elegirModo(modoActual);
+        animarTitulo();
       })();
     </script>
   </body>
