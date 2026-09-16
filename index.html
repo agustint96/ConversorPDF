@@ -81,13 +81,64 @@
       /* ---------- marca ---------- */
 
       .marca {
+        display: flex;
+        align-items: center;
+        gap: 0.85rem;
         margin-bottom: 1.75rem;
       }
 
       .marca-icono {
         width: 3.25rem;
         height: 3.25rem;
+        flex: none;
         display: block;
+      }
+
+      .marca-titulo {
+        font-family: var(--sans);
+        font-size: 1.8rem;
+        font-weight: 700;
+        letter-spacing: -0.01em;
+        color: var(--w98-selbg);
+        margin: 0;
+      }
+
+      .marca-o {
+        position: relative;
+        display: inline-block;
+      }
+
+      .marca-o-letra {
+        transition: opacity 0.15s ease;
+      }
+
+      .marca-o-icono {
+        position: absolute;
+        inset: 0;
+        width: 0.82em;
+        height: 0.82em;
+        margin: auto;
+        opacity: 0;
+        transform: scale(0.7);
+        transition:
+          opacity 0.15s ease,
+          transform 0.15s ease;
+      }
+
+      .marca-o:hover .marca-o-letra {
+        opacity: 0;
+      }
+
+      .marca-o:hover .marca-o-icono {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .marca-o-letra,
+        .marca-o-icono {
+          transition: none;
+        }
       }
 
       /* ---------- selector de modo ---------- */
@@ -129,7 +180,7 @@
 
       /* ---------- encabezado ---------- */
 
-      h1 {
+      #titulo {
         font-family: var(--sans);
         font-size: 1.7rem;
         font-weight: 700;
@@ -138,7 +189,7 @@
         margin: 1.5rem 0 0;
       }
 
-      h1 .flecha {
+      #titulo .flecha {
         color: var(--w98-selbg);
       }
 
@@ -542,6 +593,83 @@
             />
           </g>
         </svg>
+        <h1 class="marca-titulo">
+          F<span class="marca-o"
+            ><span class="marca-o-letra">o</span
+            ><svg
+              class="marca-o-icono"
+              viewBox="-10 -10 20 20"
+              aria-hidden="true"
+            >
+              <path
+                d="M-7.5 2.3a8 8 0 0 1 13.2-5.9"
+                fill="none"
+                stroke="#12305a"
+                stroke-width="3"
+                stroke-linecap="round"
+              />
+              <path
+                d="M5 -7.6l1.6-5.1 4.6 2.3"
+                fill="none"
+                stroke="#12305a"
+                stroke-width="3"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M7.5 -2.3a8 8 0 0 1 -13.2 5.9"
+                fill="none"
+                stroke="#808076"
+                stroke-width="3"
+                stroke-linecap="round"
+              />
+              <path
+                d="M-5 7.6l-1.6 5.1-4.6-2.3"
+                fill="none"
+                stroke="#808076"
+                stroke-width="3"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              /></svg
+          ></span>rmat<span class="marca-o"
+            ><span class="marca-o-letra">o</span
+            ><svg
+              class="marca-o-icono"
+              viewBox="-10 -10 20 20"
+              aria-hidden="true"
+            >
+              <path
+                d="M-7.5 2.3a8 8 0 0 1 13.2-5.9"
+                fill="none"
+                stroke="#12305a"
+                stroke-width="3"
+                stroke-linecap="round"
+              />
+              <path
+                d="M5 -7.6l1.6-5.1 4.6 2.3"
+                fill="none"
+                stroke="#12305a"
+                stroke-width="3"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M7.5 -2.3a8 8 0 0 1 -13.2 5.9"
+                fill="none"
+                stroke="#808076"
+                stroke-width="3"
+                stroke-linecap="round"
+              />
+              <path
+                d="M-5 7.6l-1.6 5.1-4.6-2.3"
+                fill="none"
+                stroke="#808076"
+                stroke-width="3"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              /></svg
+          ></span>r
+        </h1>
       </div>
 
       <div class="selector" id="selector">
@@ -556,7 +684,7 @@
         </button>
       </div>
 
-      <h1 id="titulo"></h1>
+      <h2 id="titulo"></h2>
       <p class="bajada" id="bajada"></p>
 
       <input type="file" id="archivo" />
