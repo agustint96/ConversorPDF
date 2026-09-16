@@ -77,6 +77,85 @@
         padding: 2.5rem 1.5rem 4rem;
       }
 
+      /* ---------- pantalla de carga ---------- */
+
+      /* Cubre toda la página mientras carga (fuentes, primer arranque en
+         frío del server): sin esto, ese rato se ve en blanco o con el
+         texto sin la tipografía todavía. El mismo ícono de las "o" del
+         logo, girando, con una barra de abajo hacia arriba que lo pasa de
+         blanco y negro a color — ver el spinner gemelo en sisop.html, que
+         usa este mismo diseño para la ventana de Formator en el escritorio. */
+      .pageload-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 999;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 14px;
+        background: var(--w98-field);
+        color: var(--apagado);
+        font-family: var(--sans);
+        font-size: 0.8rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        transition: opacity 0.25s ease;
+      }
+      .pageload-overlay.oculto {
+        opacity: 0;
+        pointer-events: none;
+      }
+      .formator-loader {
+        position: relative;
+        width: 72px;
+        height: 72px;
+        flex: none;
+      }
+      .formator-loader .fl-icon {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+      }
+      .formator-loader .fl-gray {
+        filter: grayscale(1) opacity(0.55);
+      }
+      .formator-loader .fl-spin {
+        position: absolute;
+        inset: 0;
+        animation: fl-spin 1.1s linear infinite;
+      }
+      .formator-loader .fl-fill {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+        clip-path: inset(100% 0 0 0);
+        animation: fl-fill 1.6s ease-in-out infinite;
+      }
+      @keyframes fl-spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      @keyframes fl-fill {
+        from {
+          clip-path: inset(100% 0 0 0);
+        }
+        to {
+          clip-path: inset(0% 0 0 0);
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .formator-loader .fl-spin {
+          animation: none;
+        }
+        .formator-loader .fl-fill {
+          animation: none;
+          clip-path: inset(50% 0 0 0);
+        }
+      }
+
       /* ---------- marca ---------- */
 
       .marca {
@@ -516,6 +595,99 @@
     </style>
   </head>
   <body>
+    <div class="pageload-overlay" id="pageloadOverlay" role="status" aria-label="Cargando…">
+      <div class="formator-loader">
+        <div class="fl-spin">
+          <svg class="fl-icon fl-gray" viewBox="-14 -14 28 28" aria-hidden="true">
+            <path
+              d="M-7.5 2.3a8 8 0 0 1 13.2-5.9"
+              fill="none"
+              stroke="#2f5fa8"
+              stroke-width="3"
+              stroke-linecap="round"
+            />
+            <path
+              d="M5 -7.6l1.6-5.1 4.6 2.3"
+              fill="none"
+              stroke="#2f5fa8"
+              stroke-width="3"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <path
+              d="M7.5 -2.3a8 8 0 0 1 -13.2 5.9"
+              fill="none"
+              stroke="#808076"
+              stroke-width="3"
+              stroke-linecap="round"
+            />
+            <path
+              d="M-5 7.6l-1.6 5.1-4.6-2.3"
+              fill="none"
+              stroke="#808076"
+              stroke-width="3"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </div>
+        <div class="fl-fill">
+          <div class="fl-spin">
+            <svg class="fl-icon fl-color" viewBox="-14 -14 28 28" aria-hidden="true">
+              <path
+                d="M-7.5 2.3a8 8 0 0 1 13.2-5.9"
+                fill="none"
+                stroke="#2f5fa8"
+                stroke-width="3"
+                stroke-linecap="round"
+              />
+              <path
+                d="M5 -7.6l1.6-5.1 4.6 2.3"
+                fill="none"
+                stroke="#2f5fa8"
+                stroke-width="3"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M7.5 -2.3a8 8 0 0 1 -13.2 5.9"
+                fill="none"
+                stroke="#808076"
+                stroke-width="3"
+                stroke-linecap="round"
+              />
+              <path
+                d="M-5 7.6l-1.6 5.1-4.6-2.3"
+                fill="none"
+                stroke="#808076"
+                stroke-width="3"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </div>
+        </div>
+      </div>
+      <span>Cargando…</span>
+    </div>
+    <script>
+      (function () {
+        // Se saca sola cuando termina de cargar todo (fuentes incluidas) —
+        // con un tope por si algún recurso externo tarda de más, para que
+        // nunca quede tapando la página.
+        function ocultarCarga() {
+          var el = document.getElementById("pageloadOverlay");
+          if (!el) return;
+          el.classList.add("oculto");
+          setTimeout(function () {
+            el.remove();
+          }, 300);
+        }
+        if (document.readyState === "complete") ocultarCarga();
+        else window.addEventListener("load", ocultarCarga);
+        setTimeout(ocultarCarga, 6000);
+      })();
+    </script>
     <main>
       <div class="marca">
         <svg
